@@ -47,5 +47,7 @@ fn main() {
         systemd_service("nova-first-boot.service");
     } else if image_type == "plasma" {
         systemd_service("umbra-first-boot.service");
-    }
+    } else if image_type == "horizon-arcturus" {
+        systemd_service("horizon-first-boot.service")
+    };
 }
