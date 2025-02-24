@@ -32,7 +32,9 @@ fn systemd_service(service_name: &str) {
 
     let target_status = String::from_utf8_lossy(&check_status.stdout);
 
-    if target_status == "graphical.target" {
+    println!("Target: {}", target_status);
+
+    if target_status.contains("graphical.target") {
         return;
     } else {
         let _set_graphical = Command::new("systemctl") 
@@ -49,8 +51,6 @@ fn systemd_service(service_name: &str) {
             .args(["reboot"])
             .status()
             .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
-
-
     }
 }
 
