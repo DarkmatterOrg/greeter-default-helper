@@ -24,13 +24,15 @@ fn get_image_type() -> String {
 }
 
 fn systemd_service(service_name: &str) {
-    let _check_status = Command::new("systemctl")
+    let check_status = Command::new("systemctl")
         .args(["get-default"])
-        .status()
+        .output()
         .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
         
-    let _target_status = String::from_utf8_lossy(&status.stdout);
-    if _target_status == "graphical.target" {
+
+    let target_status = String::from_utf8_lossy(&check_status.stdout);
+
+    if target_status == "graphical.target" {
         return;
     } else {
         let _set_graphical = Command::new("systemctl") 
