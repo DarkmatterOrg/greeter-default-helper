@@ -24,20 +24,25 @@ fn get_image_type() -> String {
 }
 
 fn systemd_service(service_name: &str) {
-    let _set_graphical = Command::new("systemctl") 
-        .args(["set-default", "graphical.target"])
+    let _check_status = Command::new("systemctl")
+        .args(["get-default"])
         .status()
         .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
         
-    let _disable_service = Command::new("systemctl")
-        .args(["disable", service_name])
-        .status()
-        .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
+    let _target_status = String::from_utf8_lossy(&status.stdout);
+    if _target_status == "graphical.target" {
+        return;
+    } else {
+        let _set_graphical = Command::new("systemctl") 
+            .args(["set-default", "graphical.target"])
+            .status()
+            .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
             
-    let _reboot = Command::new("systemctl")
-        .args(["reboot"])
-        .status()
-        .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
+        let _reboot = Command::new("systemctl")
+            .args(["reboot"])
+            .status()
+            .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
+    }
 }
 
 fn main() {
@@ -47,7 +52,5 @@ fn main() {
         systemd_service("nova-first-boot.service");
     } else if image_type == "plasma" {
         systemd_service("umbra-first-boot.service");
-    } else if image_type == "horizon-arcturus" {
-        systemd_service("horizon-first-boot.service")
     };
 }
