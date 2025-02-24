@@ -1,0 +1,13 @@
+[Unit]
+Description=Helper for setting the default target to graphical
+Before=sddm.service
+Before=gdm.service
+Before=cosmic-greeter.service
+
+[Service]
+ExecStart=/usr/bin/gdh
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

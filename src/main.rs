@@ -39,11 +39,18 @@ fn systemd_service(service_name: &str) {
             .args(["set-default", "graphical.target"])
             .status()
             .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
-            
+        
+        let _disable_service = Command::new("systemctl")
+            .args(["disable", service_name])
+            .status()
+            .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
+
         let _reboot = Command::new("systemctl")
             .args(["reboot"])
             .status()
             .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
+
+
     }
 }
 
