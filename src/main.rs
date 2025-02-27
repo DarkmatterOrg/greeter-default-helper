@@ -1,8 +1,7 @@
-use std::{path::Path, process::Command};
 use std::fs;
+use std::{path::Path, process::Command};
 
 fn get_image_type() -> String {
-    
     let image_type_file: Option<&Path>;
 
     if Path::new("/usr/share/horizon").exists() {
@@ -20,7 +19,7 @@ fn get_image_type() -> String {
 
     let image_name = image.trim().to_string();
 
-    return image_name
+    return image_name;
 }
 
 fn systemd_service(service_name: &str) {
@@ -28,27 +27,24 @@ fn systemd_service(service_name: &str) {
         .args(["get-default"])
         .output()
         .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
-        
 
     let target_status = String::from_utf8_lossy(&check_status.stdout);
 
-    println!("Target: {}", target_status);
-
     if target_status.contains("graphical.target") {
-        return;
-    } else {
-        let _set_graphical = Command::new("systemctl") 
-            .args(["set-default", "graphical.target"])
-            .status()
-            .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
-        
         let _disable_service = Command::new("systemctl")
             .args(["disable", service_name])
             .status()
             .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
 
-        let _reboot = Command::new("systemctl")
-            .args(["reboot"])
+        return;
+    } else {
+        let _set_graphical = Command::new("systemctl")
+            .args(["set-default", "graphical.target"])
+            .status()
+            .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
+
+        let _disable_service = Command::new("systemctl")
+            .args(["disable", service_name])
             .status()
             .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
     }
@@ -56,10 +52,15 @@ fn systemd_service(service_name: &str) {
 
 fn main() {
     let image_type = get_image_type();
-  
+
     if image_type.contains("nova") {
         systemd_service("nova-first-boot.service");
-    } else if image_type == "plasma" {
+    } else if image_type.contains("umbra") {
         systemd_service("umbra-first-boot.service");
     };
+
+    let _reboot = Command::new("systemctl")
+        .args(["reboot"])
+        .status()
+        .expect("An error occured. Guess, I'm gonna have a panic attack now! :(");
 }
