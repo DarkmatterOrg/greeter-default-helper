@@ -22,7 +22,7 @@ fn get_image_type() -> String {
     return image_name;
 }
 
-fn systemd_service(service_name: &str) {
+fn systemd_default() -> String {
     let check_status = Command::new("systemctl")
         .args(["get-default"])
         .output()
@@ -30,7 +30,17 @@ fn systemd_service(service_name: &str) {
 
     let target_status = String::from_utf8_lossy(&check_status.stdout);
 
-    if target_status.contains("graphical.target") {
+    let status = target_status.trim();
+
+    return status.to_string();
+}
+
+fn systemd_service(service_name: &str) {
+    let status = systemd_default();
+
+    if status.contains("graphical.target") {
+        println!("Target already set to graphical. Exiting");
+
         let _disable_service = Command::new("systemctl")
             .args(["disable", service_name])
             .status()
@@ -51,13 +61,13 @@ fn systemd_service(service_name: &str) {
 }
 
 fn main() {
-    let image_type = get_image_type();
-
-    if image_type.contains("nova") {
+    /*if image_type.contains("nova") {
         systemd_service("nova-first-boot.service");
     } else if image_type.contains("umbra") {
         systemd_service("umbra-first-boot.service");
-    };
+    };*/
+
+    let _change_target = systemd_service("greeter-default.service");
 
     let _reboot = Command::new("systemctl")
         .args(["reboot"])
